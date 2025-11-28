@@ -14,6 +14,9 @@ namespace Backend_CRUD.Application.Services
             _empleadoRepository = empleadoRepository;
         }
 
+
+
+
         // CREAR:
         public async Task<ResponseDTO<Empleado>> CreateEmpleadoAsync(Empleado empleado)
         {
@@ -69,6 +72,7 @@ namespace Backend_CRUD.Application.Services
             }
         }
 
+
         // OBTENER LISTADO:
         public async Task<PaginatedResponseDTO<IEnumerable<Empleado>>> GetEmpleadosAsync(int page = 1, int pageSize = 10, string? search = null)
         {
@@ -100,6 +104,7 @@ namespace Backend_CRUD.Application.Services
                 };
             }
         }
+
 
         // OBTENER POR ID:
         public async Task<ResponseDTO<Empleado>> GetEmpleadoByIdAsync(int id)
@@ -145,6 +150,7 @@ namespace Backend_CRUD.Application.Services
                 };
             }
         }
+
 
         // ACTUALIZAR:
         public async Task<ResponseDTO<Empleado>> UpdateEmpleadoAsync(int id, Empleado empleado)
@@ -223,5 +229,6 @@ namespace Backend_CRUD.Application.Services
                 };
             }
         }
+    
     }
 }

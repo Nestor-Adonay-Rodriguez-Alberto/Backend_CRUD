@@ -50,6 +50,7 @@ namespace Backend_CRUD.Presentation
             }
         }
 
+
         // OBTENER POR ID:
         [Function("GetEmpleadoById")]
         public async Task<IActionResult> GetEmpleadoById([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "empleados/ById/{id}")] HttpRequest req, int id)
@@ -76,6 +77,7 @@ namespace Backend_CRUD.Presentation
                 return new StatusCodeResult(500);
             }
         }
+
 
         // ACTUALIZAR:
         [Function("UpdateEmpleado")]
@@ -134,6 +136,7 @@ namespace Backend_CRUD.Presentation
             }
         }
 
+
         // CREAR:
         [Function("CreateEmpleado")]
         public async Task<IActionResult> CreateEmpleado([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "empleados")] HttpRequest req)
@@ -177,5 +180,6 @@ namespace Backend_CRUD.Presentation
                 return new StatusCodeResult(500);
             }
         }
+    
     }
 }

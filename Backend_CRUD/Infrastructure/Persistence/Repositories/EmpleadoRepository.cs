@@ -14,6 +14,10 @@ namespace Backend_CRUD.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
+
+
+
+
         // CREAR:
         public async Task<Empleado> CreateEmpleadoAsync(Empleado empleado)
         {
@@ -21,6 +25,7 @@ namespace Backend_CRUD.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync();
             return empleado;
         }
+
 
         // OBTENER LISTADO:
         public async Task<(IEnumerable<Empleado> Empleados, int TotalCount)> GetEmpleadosAsync(int page, int pageSize, string? search)
@@ -46,11 +51,13 @@ namespace Backend_CRUD.Infrastructure.Persistence.Repositories
             return (empleados, totalCount);
         }
 
+
         // OBTENER POR ID:
         public async Task<Empleado?> GetEmpleadoByIdAsync(int id)
         {
             return await _context.Empleados.FindAsync(id);
         }
+
 
         // ACTUALIZAR:
         public async Task<Empleado?> UpdateEmpleadoAsync(Empleado empleado)
@@ -67,5 +74,6 @@ namespace Backend_CRUD.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync();
             return existingEmpleado;
         }
+  
     }
 }

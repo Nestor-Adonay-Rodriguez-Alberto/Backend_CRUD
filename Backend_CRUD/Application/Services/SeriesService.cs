@@ -15,6 +15,8 @@ namespace Backend_CRUD.Application.Services
         }
 
 
+
+
         // CREAR:
         public async Task<ResponseDTO<Serie>> CreateSerieAsync(Serie serie)
         {
@@ -188,5 +190,6 @@ namespace Backend_CRUD.Application.Services
                 };
             }
         }
+   
     }
 }
