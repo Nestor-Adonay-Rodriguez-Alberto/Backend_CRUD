@@ -1,4 +1,4 @@
-using Backend_CRUD.Application.DTOs.Responses;
+using Backend_CRUD.Domain.DTOs.Responses;
 using Backend_CRUD.Domain.Entities;
 using Backend_CRUD.Domain.Interfaces.Repositories;
 using Backend_CRUD.Domain.Interfaces.Services;

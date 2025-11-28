@@ -1,4 +1,4 @@
-using Backend_CRUD.Application.DTOs.Responses;
+using Backend_CRUD.Domain.DTOs.Responses;
 using Backend_CRUD.Domain.Entities;
 
 namespace Backend_CRUD.Domain.Interfaces.Services

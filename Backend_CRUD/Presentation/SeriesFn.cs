@@ -53,12 +53,13 @@ namespace Backend_CRUD.Presentation
 
         // OBTENER POR ID:
         [Function("GetSerieById")]
-        public async Task<IActionResult> GetSerieById([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series/{id}")] HttpRequest req, int id)
+        public async Task<IActionResult> GetSerieById([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series/ById/{id}")] HttpRequest req, int id)
         {
-            _logger.LogInformation($"Procesando solicitud para obtener serie con ID: {id}.");
+            _logger.LogInformation("Procesando solicitud para obtener serie por ID.");
 
             try
             {
+
                 var response = await _seriesService.GetSerieByIdAsync(id);
 
                 if (response.Status)
@@ -72,7 +73,7 @@ namespace Backend_CRUD.Presentation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error inesperado al obtener serie con ID: {id}");
+                _logger.LogError(ex, "Error inesperado al obtener serie por ID");
                 return new StatusCodeResult(500);
             }
         }
@@ -80,12 +81,21 @@ namespace Backend_CRUD.Presentation
 
         // ACTUALIZAR:
         [Function("UpdateSerie")]
-        public async Task<IActionResult> UpdateSerie([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/{id}")] HttpRequest req, int id)
+        public async Task<IActionResult> UpdateSerie([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/update/{id}")] HttpRequest req)
         {
-            _logger.LogInformation($"Procesando solicitud para actualizar serie con ID: {id}.");
+            _logger.LogInformation("Procesando solicitud para actualizar serie.");
 
             try
             {
+                // Extraer ID de la ruta manualmente
+                var routeValues = req.RouteValues;
+                if (!routeValues.TryGetValue("id", out var idValue) || !int.TryParse(idValue?.ToString(), out var id))
+                {
+                    return new BadRequestObjectResult(new { message = "ID inválido" });
+                }
+
+                _logger.LogInformation($"ID extraído: {id}");
+
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 
                 if (string.IsNullOrEmpty(requestBody))
@@ -121,7 +131,7 @@ namespace Backend_CRUD.Presentation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error inesperado al actualizar serie con ID: {id}");
+                _logger.LogError(ex, "Error inesperado al actualizar serie");
                 return new StatusCodeResult(500);
             }
         }

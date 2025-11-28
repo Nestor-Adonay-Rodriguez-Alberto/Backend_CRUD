@@ -19,6 +19,8 @@ namespace Backend_CRUD.Presentation
             _empleadoService = empleadoService;
         }
 
+
+
         // OBTENER LISTADO:
         [Function("GetEmpleados")]
         public async Task<IActionResult> GetEmpleados([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "empleados/get-all")] HttpRequest req)
@@ -50,12 +52,13 @@ namespace Backend_CRUD.Presentation
 
         // OBTENER POR ID:
         [Function("GetEmpleadoById")]
-        public async Task<IActionResult> GetEmpleadoById([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "empleados/{id}")] HttpRequest req, int id)
+        public async Task<IActionResult> GetEmpleadoById([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "empleados/ById/{id}")] HttpRequest req, int id)
         {
-            _logger.LogInformation($"Procesando solicitud para obtener empleado con ID: {id}.");
+            _logger.LogInformation("Procesando solicitud para obtener empleado por ID.");
 
             try
             {
+
                 var response = await _empleadoService.GetEmpleadoByIdAsync(id);
 
                 if (response.Status)
@@ -69,19 +72,28 @@ namespace Backend_CRUD.Presentation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error inesperado al obtener empleado con ID: {id}");
+                _logger.LogError(ex, "Error inesperado al obtener empleado por ID");
                 return new StatusCodeResult(500);
             }
         }
 
         // ACTUALIZAR:
         [Function("UpdateEmpleado")]
-        public async Task<IActionResult> UpdateEmpleado([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "empleados/{id}")] HttpRequest req, int id)
+        public async Task<IActionResult> UpdateEmpleado([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "empleados/{id}")] HttpRequest req)
         {
-            _logger.LogInformation($"Procesando solicitud para actualizar empleado con ID: {id}.");
+            _logger.LogInformation("Procesando solicitud para actualizar empleado.");
 
             try
             {
+                // Extraer ID de la ruta manualmente
+                var routeValues = req.RouteValues;
+                if (!routeValues.TryGetValue("id", out var idValue) || !int.TryParse(idValue?.ToString(), out var id))
+                {
+                    return new BadRequestObjectResult(new { message = "ID inválido" });
+                }
+
+                _logger.LogInformation($"ID extraído: {id}");
+
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 
                 if (string.IsNullOrEmpty(requestBody))
@@ -117,7 +129,7 @@ namespace Backend_CRUD.Presentation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error inesperado al actualizar empleado con ID: {id}");
+                _logger.LogError(ex, "Error inesperado al actualizar empleado");
                 return new StatusCodeResult(500);
             }
         }
