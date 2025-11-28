@@ -74,6 +74,14 @@ namespace Backend_CRUD.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync();
             return existingEmpleado;
         }
+
+
+        // AUTENTICACIÓN:
+        public async Task<Empleado?> GetEmpleadoByCredentialsAsync(string nombre, string contraseña)
+        {
+            return await _context.Empleados
+                .FirstOrDefaultAsync(e => e.Nombre == nombre && e.Contraseña == contraseña);
+        }
   
     }
 }

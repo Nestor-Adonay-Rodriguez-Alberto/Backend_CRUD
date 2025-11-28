@@ -1,4 +1,5 @@
 ﻿using Backend_CRUD.Application.Services;
+using Backend_CRUD.CrossCutting.Configuration;
 using Backend_CRUD.Domain.Interfaces.Repositories;
 using Backend_CRUD.Domain.Interfaces.Services;
 using Backend_CRUD.Infrastructure.Database;
@@ -15,16 +16,24 @@ using Unex.Modulo9.Financiamientos.CrossCutting.Helpers.CustomMapper.Interfaces;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
+// CONFIGURACIÓN JWT:
+builder.Services.Configure<JwtSettings>(options =>
+{
+    options.SecretKey = Environment.GetEnvironmentVariable("JWT_SecretKey") ?? "MiClaveSecretaSuperSeguraParaJWT2024Backend";
+    options.Issuer = Environment.GetEnvironmentVariable("JWT_Issuer") ?? "Backend_CRUD_API";
+    options.Audience = Environment.GetEnvironmentVariable("JWT_Audience") ?? "Backend_CRUD_Client";
+    options.ExpirationMinutes = int.TryParse(Environment.GetEnvironmentVariable("JWT_ExpirationMinutes"), out var exp) ? exp : 60;
+});
+
 // INYECCIONES DE REPOSITORIOS:
 builder.Services.AddScoped<ISeriesRepository, SeriesRepository>();
 builder.Services.AddScoped<IEmpleadoRepository, EmpleadoRepository>();
 
-
-
-
 // INYECCIONES DE SERVICES:
 builder.Services.AddScoped<ISeriesService, SeriesService>();
 builder.Services.AddScoped<IEmpleadoService, EmpleadoService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 

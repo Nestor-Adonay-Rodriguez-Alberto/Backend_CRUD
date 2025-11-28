@@ -1,3 +1,4 @@
+using Backend_CRUD.CrossCutting.Helpers;
 using Backend_CRUD.Domain.Entities;
 using Backend_CRUD.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
@@ -12,11 +13,13 @@ namespace Backend_CRUD.Presentation
     {
         private readonly ILogger<SeriesFn> _logger;
         private readonly ISeriesService _seriesService;
+        private readonly IJwtService _jwtService;
 
-        public SeriesFn(ILogger<SeriesFn> logger, ISeriesService seriesService)
+        public SeriesFn(ILogger<SeriesFn> logger, ISeriesService seriesService, IJwtService jwtService)
         {
             _logger = logger;
             _seriesService = seriesService;
+            _jwtService = jwtService;
         }
 
 
@@ -29,6 +32,10 @@ namespace Backend_CRUD.Presentation
 
             try
             {
+                // Validar JWT
+                var jwtValidation = await JwtHelper.ValidateJwtToken(req, _jwtService, _logger);
+                if (jwtValidation != null) return jwtValidation;
+
                 // Obtener parámetros de query
                 var pageParam = req.Query["page"].ToString();
                 var pageSizeParam = req.Query["pageSize"].ToString();
@@ -84,6 +91,10 @@ namespace Backend_CRUD.Presentation
         public async Task<IActionResult> UpdateSerie([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/update/{id}")] HttpRequest req)
         {
             _logger.LogInformation("Procesando solicitud para actualizar serie.");
+
+            // Validar JWT
+            var jwtValidation = await JwtHelper.ValidateJwtToken(req, _jwtService, _logger);
+            if (jwtValidation != null) return jwtValidation;
 
             try
             {
@@ -142,6 +153,10 @@ namespace Backend_CRUD.Presentation
         public async Task<IActionResult> CreateSerie([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "series")] HttpRequest req)
         {
             _logger.LogInformation("Procesando solicitud para crear una nueva serie.");
+
+            // Validar JWT
+            var jwtValidation = await JwtHelper.ValidateJwtToken(req, _jwtService, _logger);
+            if (jwtValidation != null) return jwtValidation;
 
             try
             {

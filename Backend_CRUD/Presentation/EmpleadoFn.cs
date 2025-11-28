@@ -1,3 +1,4 @@
+using Backend_CRUD.CrossCutting.Helpers;
 using Backend_CRUD.Domain.Entities;
 using Backend_CRUD.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
@@ -12,11 +13,13 @@ namespace Backend_CRUD.Presentation
     {
         private readonly ILogger<EmpleadoFn> _logger;
         private readonly IEmpleadoService _empleadoService;
+        private readonly IJwtService _jwtService;
 
-        public EmpleadoFn(ILogger<EmpleadoFn> logger, IEmpleadoService empleadoService)
+        public EmpleadoFn(ILogger<EmpleadoFn> logger, IEmpleadoService empleadoService, IJwtService jwtService)
         {
             _logger = logger;
             _empleadoService = empleadoService;
+            _jwtService = jwtService;
         }
 
 
@@ -85,6 +88,10 @@ namespace Backend_CRUD.Presentation
         {
             _logger.LogInformation("Procesando solicitud para actualizar empleado.");
 
+            // Validar JWT
+            var jwtValidation = await JwtHelper.ValidateJwtToken(req, _jwtService, _logger);
+            if (jwtValidation != null) return jwtValidation;
+
             try
             {
                 // Extraer ID de la ruta manualmente
@@ -142,6 +149,10 @@ namespace Backend_CRUD.Presentation
         public async Task<IActionResult> CreateEmpleado([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "empleados")] HttpRequest req)
         {
             _logger.LogInformation("Procesando solicitud para crear un nuevo empleado.");
+
+            // Validar JWT
+            var jwtValidation = await JwtHelper.ValidateJwtToken(req, _jwtService, _logger);
+            if (jwtValidation != null) return jwtValidation;
 
             try
             {
