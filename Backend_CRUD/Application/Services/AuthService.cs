@@ -11,11 +11,13 @@ namespace Backend_CRUD.Application.Services
     {
         private readonly IEmpleadoRepository _empleadoRepository;
         private readonly IJwtService _jwtService;
+        private readonly ITokenBlacklistService _blacklistService;
 
-        public AuthService(IEmpleadoRepository empleadoRepository, IJwtService jwtService)
+        public AuthService(IEmpleadoRepository empleadoRepository, IJwtService jwtService, ITokenBlacklistService blacklistService)
         {
             _empleadoRepository = empleadoRepository;
             _jwtService = jwtService;
+            _blacklistService = blacklistService;
         }
 
         public async Task<ResponseDTO<LoginResponseDTO>> LoginAsync(LoginRequestDTO loginRequest)
@@ -62,6 +64,57 @@ namespace Backend_CRUD.Application.Services
                 {
                     Status = false,
                     Message = $"Error en el login: {ex.Message}",
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<ResponseDTO<string>> LogoutAsync(string token)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(token))
+                {
+                    return new ResponseDTO<string>
+                    {
+                        Status = false,
+                        Message = "Token requerido",
+                        Data = null
+                    };
+                }
+
+                // Validar que el token sea válido antes de revocarlo
+                var principal = _jwtService.ValidateToken(token);
+                if (principal == null)
+                {
+                    return new ResponseDTO<string>
+                    {
+                        Status = false,
+                        Message = "Token inválido o expirado",
+                        Data = null
+                    };
+                }
+
+                // Obtener el ID del token (JTI) y agregarlo a la blacklist
+                var tokenId = _jwtService.GetTokenId(token);
+                if (!string.IsNullOrEmpty(tokenId))
+                {
+                    _blacklistService.RevokeToken(tokenId);
+                }
+
+                return new ResponseDTO<string>
+                {
+                    Status = true,
+                    Message = "Logout exitoso",
+                    Data = "Sesión cerrada correctamente"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO<string>
+                {
+                    Status = false,
+                    Message = $"Error en el logout: {ex.Message}",
                     Data = null
                 };
             }

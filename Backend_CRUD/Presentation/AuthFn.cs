@@ -61,5 +61,38 @@ namespace Backend_CRUD.Presentation
                 return new StatusCodeResult(500);
             }
         }
+
+        [Function("Logout")]
+        public async Task<IActionResult> Logout([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth/logout")] HttpRequest req)
+        {
+            _logger.LogInformation("Procesando solicitud de logout.");
+
+            try
+            {
+                // Extraer token del header Authorization
+                var authHeader = req.Headers["Authorization"].FirstOrDefault();
+                if (authHeader == null || !authHeader.StartsWith("Bearer "))
+                {
+                    return new BadRequestObjectResult(new { message = "Token de autorización requerido" });
+                }
+
+                var token = authHeader.Substring("Bearer ".Length).Trim();
+                var response = await _authService.LogoutAsync(token);
+
+                if (response.Status)
+                {
+                    return new OkObjectResult(response);
+                }
+                else
+                {
+                    return new BadRequestObjectResult(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado en logout");
+                return new StatusCodeResult(500);
+            }
+        }
     }
 }
